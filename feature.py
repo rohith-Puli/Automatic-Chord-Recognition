@@ -1,7 +1,7 @@
 import librosa, librosa.display
 import vamp
 
-import matplotlib.pyplot as plt 
+#import matplotlib.pyplot as plt 
 import numpy as np 
 
 #name is the name with extension
