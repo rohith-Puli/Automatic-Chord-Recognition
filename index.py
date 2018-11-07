@@ -33,7 +33,7 @@ z_boundaries = feature.zero_boundaries(z)
 peaks = feature.find_common_zerospeaks(peaks = peaks, z =z)
 
 #4.send peaks,z_boundaries, audio to chunkSender which will create a frame-level file
-new_name = chunk_send.chunk_sender(peaks=peaks, z_boundaries=z_boundaries, aud=y, location=location, name=name.split('.')[0],hop_length= 512,binsPerOctave= 36,sr=44100)
+new_name = chunk_send.chunk_sender(peaks=peaks, z_boundaries=z_boundaries, aud=y, location=location,method = 'cqt', name=name.split('.')[0],hop_length= 512,binsPerOctave= 36,sr=44100)
 
 #5. Convert the frame based chord labels to time based labels
 est_file = feature.frame_file_converter(path = location, fileName = new_name , sr= sr, hop_length= hop_length)
