@@ -93,9 +93,26 @@ def correlate(z):
 	return index, isTriad, maxTriad, maxSeventh, z
 
 
-def chordFind(t, strING, sr, hop_length, binsPerOctave, location, start_idx, end_idx):
-	path = location + strING + binsPerOctave+ '.txt'
-	f = open(path, 'a')
+# def chordFind(t, strING, binsPerOctave= '',location, start_idx):
+# 	path = location + strING + binsPerOctave+ '.txt'
+# 	f = open(path, 'a')
+# 	# path_vector =  location + strING + binsPerOctave+ 'Vector'+ '.txt'
+# 	# f_vector = open(path_vector, 'a')
+# 	for x in range(0,len(t),1):
+# 		index, isTriad, maxTriad, maxSeventh, z = correlate(t[x])
+# 		#f_vector.write("%d %f %f %f %f %f %f %f %f %f %f %f %f\n"%(x+start_idx,z[0],z[1],z[2],z[3],z[4],z[5],z[6],z[7],z[8],z[9],z[10],z[11]))
+		
+# 		getcontext().prec =9
+# 		if isTriad==1:
+# 			f.write("%d %d %s %s %f %f \n"%(x+start_idx,chordTriad[index][0],chordTriad[index][1],chordTriad[index][3], maxTriad, maxSeventh))
+# 		else:
+# 			f.write("%d %d %s %s %f %f \n"%(x+start_idx,chordSeventh[index][0],chordSeventh[index][1],chordSeventh[index][3], maxTriad, maxSeventh ))
+# 	f.close()
+# 	return ;
+
+def chordFind(t, strING, binsPerOctave,location, start_idx, chord_labels):
+	# path = location + strING + binsPerOctave+ '.txt'
+	# f = open(path, 'a')
 	# path_vector =  location + strING + binsPerOctave+ 'Vector'+ '.txt'
 	# f_vector = open(path_vector, 'a')
 	for x in range(0,len(t),1):
@@ -104,8 +121,10 @@ def chordFind(t, strING, sr, hop_length, binsPerOctave, location, start_idx, end
 		
 		getcontext().prec =9
 		if isTriad==1:
-			f.write("%d %d %s %s %f %f \n"%(x+start_idx,chordTriad[index][0],chordTriad[index][1],chordTriad[index][3], maxTriad, maxSeventh))
+			chord_labels = np.vstack((chord_labels, [x+start_idx,chordTriad[index][0],chordTriad[index][1],chordTriad[index][3], maxTriad, maxSeventh]))
+			#f.write("%d %d %s %s %f %f \n"%(x+start_idx,chordTriad[index][0],chordTriad[index][1],chordTriad[index][3], maxTriad, maxSeventh))
 		else:
-			f.write("%d %d %s %s %f %f \n"%(x+start_idx,chordSeventh[index][0],chordSeventh[index][1],chordSeventh[index][3], maxTriad, maxSeventh ))
-	f.close()
-	return ;
+			chord_labels = np.vstack((chord_labels, [x+start_idx,chordSeventh[index][0],chordSeventh[index][1],chordSeventh[index][3], maxTriad, maxSeventh ]))
+			#f.write("%d %d %s %s %f %f \n"%(x+start_idx,chordSeventh[index][0],chordSeventh[index][1],chordSeventh[index][3], maxTriad, maxSeventh ))
+	#f.close()
+	return chord_labels;

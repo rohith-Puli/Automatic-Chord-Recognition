@@ -108,30 +108,77 @@ def find_common_zerospeaks(peaks,z):
 	peaks = np.delete(peaks, i, axis =0)
 	return peaks
 
-def frame_file_converter(path, fileName, sr, hop_length):
-	converted_name = path + fileName.split('.')[0]+ 'converted.txt'
+# def frame_file_converter(path, fileName, sr, hop_length):
+# 	converted_name = path + fileName.split('.')[0]+ 'converted.txt'
+# 	hop_duration = float(hop_length)/float(sr)
+# 	fr = open(path +fileName)
+
+# 	fw = open(path + fileName.split('.')[0]+ 'converted.txt', 'w')
+
+# 	line0 = fr.readline()
+
+# 	lines = fr.readlines()
+
+# 	line0split = line0.split()
+# 	line0chordIndex = line0split[1]
+
+# 	chordIndex = int(line0chordIndex)
+# 	chordName1 = line0split[2]
+# 	chordName2 = line0split[3]
+# 	startFrameIndex = int(line0split[0])
+# 	endFrameIndex = []
+# 	count =0
+# 	for x in range(0,len(lines),1):
+# 		split = lines[x].split()
+# 		currentChordIndex = int(split[1])
+# 		currentFrameIndex = int(split[0])
+
+# 		if(currentChordIndex== chordIndex):
+# 			#print("Count = %d"%(count))
+# 			count +=1
+# 		else:
+# 			count =0 
+# 			endFrameIndex = currentFrameIndex
+# 			fw.write("%f %f %s\n"%(startFrameIndex*hop_duration, endFrameIndex*hop_duration, chordName1))
+# 			chordIndex = currentChordIndex
+# 			startFrameIndex = currentFrameIndex
+# 			chordName1 = split[2]
+# 			chordName2 = split[3]
+# 			#print("%d %d %d %s %s"%(chordIndex,startFrameIndex, endFrameIndex, chordName1, chordName2))
+# 	fr.close()
+# 	fw.close()
+# 	print("File %s successfully converted"%(fileName))
+# 	return path + fileName.split('.')[0]+ 'converted.txt';
+
+
+		
+def frame_file_converter(frame_array, sr, hop_length, dest_path, name):
+	final_path = dest_path +name + '_estimated'+ '.txt'
+	time_array = np.empty([1,3])
+	#converted_name = path + fileName.split('.')[0]+ 'converted.txt'
 	hop_duration = float(hop_length)/float(sr)
-	fr = open(path +fileName)
+	#fr = open(path +fileName)
 
-	fw = open(path + fileName.split('.')[0]+ 'converted.txt', 'w')
+	#fw = open(path + fileName.split('.')[0]+ 'converted.txt', 'w')
 
-	line0 = fr.readline()
+	# line0 = fr.readline()
+	# line0 = 
 
-	lines = fr.readlines()
+	# lines = fr.readlines()
 
-	line0split = line0.split()
-	line0chordIndex = line0split[1]
+	# line0split = line0.split()
+	line0chordIndex = frame_array[0][1]
 
 	chordIndex = int(line0chordIndex)
-	chordName1 = line0split[2]
-	chordName2 = line0split[3]
-	startFrameIndex = int(line0split[0])
+	chordName1 = frame_array[0][2]
+	chordName2 = frame_array[0][3]
+	startFrameIndex = int(frame_array[0][0])
 	endFrameIndex = []
 	count =0
-	for x in range(0,len(lines),1):
-		split = lines[x].split()
-		currentChordIndex = int(split[1])
-		currentFrameIndex = int(split[0])
+	for x in range(0,len(frame_array),1):
+		#split = frame_array[0]
+		currentChordIndex = int(frame_array[x][1])
+		currentFrameIndex = int(frame_array[x][0])
 
 		if(currentChordIndex== chordIndex):
 			#print("Count = %d"%(count))
@@ -139,16 +186,20 @@ def frame_file_converter(path, fileName, sr, hop_length):
 		else:
 			count =0 
 			endFrameIndex = currentFrameIndex
-			fw.write("%f %f %s\n"%(startFrameIndex*hop_duration, endFrameIndex*hop_duration, chordName1))
+			#fw.write("%f %f %s\n"%(startFrameIndex*hop_duration, endFrameIndex*hop_duration, chordName1))
+			time_array = np.vstack((time_array,[startFrameIndex*hop_duration, endFrameIndex*hop_duration, chordName1]))
 			chordIndex = currentChordIndex
 			startFrameIndex = currentFrameIndex
-			chordName1 = split[2]
-			chordName2 = split[3]
+			chordName1 = frame_array[x][2]
+			chordName2 = frame_array[x][3]
 			#print("%d %d %d %s %s"%(chordIndex,startFrameIndex, endFrameIndex, chordName1, chordName2))
-	fr.close()
-	fw.close()
-	print("File %s successfully converted"%(fileName))
-	return path + fileName.split('.')[0]+ 'converted.txt';
+	# fr.close()
+	# fw.close()
+	# print("File %s successfully converted"%(fileName))
+	time_array = time_array[1:]
+	np.savetxt(final_path, time_array, delimiter=' ', fmt = "%s")
+	return final_path;
+	#return path + fileName.split('.')[0]+ 'converted.txt';
 
 
 		
