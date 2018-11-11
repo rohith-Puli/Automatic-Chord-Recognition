@@ -19,16 +19,16 @@ def return_zero_between_onset(onsetfr_index_1, onsetfr_index_2, z_boundaries):
 			break
 	return flag, element
 
-def chroma_method(chunk, method):
+def chroma_method(chunk, method,sr,hop_length):
 	if (method == 'cqt'):
 		chroma = feature.chroma_finder().from_cqt(chunk)
 	elif (method == 'nnls'):
-		chroma = chroma = feature.nnls().chroma(data= chunk, sample_rate = sr,hop_length=hop_length, frame_length=2048)
+		chroma =feature.nnls().chroma(data= chunk, sample_rate = sr,hop_length=hop_length, frame_length=4096)
 	return chroma
 
 
 #def  chunk_sender(peaks, z_boundaries, aud,sr, hop_length=512,binsPerOctave, location, name, fmin):
-def chunk_sender(peaks, z_boundaries, aud, location, method, name,hop_length= 512,binsPerOctave= 36,sr=44100):
+def chunk_sender(peaks, z_boundaries, aud, method, name,hop_length= 512,binsPerOctave= 36,sr=44100):
 
 	new_name = name + str(binsPerOctave)+ '.txt'
 
@@ -61,24 +61,22 @@ def chunk_sender(peaks, z_boundaries, aud, location, method, name,hop_length= 51
 
 			############Choose the method to find CHROMA#####################
 			#chroma = feature.chroma_finder().from_cqt(chunk)
-			chroma = chroma_method(chunk,method)
+			chroma = chroma_method(chunk,method,sr, hop_length)
 			#chroma = feature.nnls().chroma(data= chunk, sample_rate = sr,hop_length=hop_length, frame_length=2048)
 			chroma = chroma.T
 
-			chord_labels = template.chordFind(t = chroma, strING = name, binsPerOctave = str(binsPerOctave),  location =location,
-				start_idx = start_idx,chord_labels =chord_labels)
+			chord_labels= template.chordFind(t = chroma,start_idx = start_idx,chord_labels=chord_labels) 
 
 			chunk = aud[zero_idx*hop_length : end_idx*hop_length]
 			chunk=np.zeros(np.shape(chunk))
 
 			############CHROMA#####################
 			#chroma = feature.chroma_finder().from_cqt(chunk)
-			chroma = chroma_method(chunk,method)
+			chroma = chroma_method(chunk,method,sr, hop_length)
 			#chroma = feature.nnls().chroma(data= chunk, sample_rate = sr,hop_length=hop_length, frame_length=2048)
 			chroma = chroma.T
 
-			chord_labels= template.chordFind(t = chroma, strING = name,  binsPerOctave = str(binsPerOctave), location =location,
-				start_idx = zero_idx,chord_labels=chord_labels)
+			chord_labels= template.chordFind(t = chroma,start_idx = zero_idx,chord_labels=chord_labels) 
 
 		else:
 			end_idx = peaks[x+1]
@@ -86,12 +84,10 @@ def chunk_sender(peaks, z_boundaries, aud, location, method, name,hop_length= 51
 
 			############CHROMA#####################
 			#chroma = feature.chroma_finder().from_cqt(chunk)
-			chroma = chroma_method(chunk,method)
+			chroma = chroma_method(chunk,method,sr, hop_length)
 			#chroma = feature.nnls().chroma(data= chunk, sample_rate = sr,hop_length=hop_length, frame_length=2048)
 			chroma = chroma.T
-
-			chord_labels= template.chordFind(t = chroma, strING = name,  binsPerOctave = str(binsPerOctave), location =location,
-				start_idx = start_idx,chord_labels=chord_labels)
+			chord_labels= template.chordFind(t = chroma,start_idx = start_idx,chord_labels=chord_labels) 
 
 	#The code below is exclusively for the last peak
 	length = len(feature.chroma_finder().from_cqt(y=aud).T)
@@ -104,20 +100,18 @@ def chunk_sender(peaks, z_boundaries, aud, location, method, name,hop_length= 51
 		############CHROMA#####################
 		#chroma = feature.chroma_finder().from_cqt(chunk)
 		#chroma = feature.nnls().chroma(data= chunk, sample_rate = sr,hop_length=hop_length, frame_length=2048)
-		chroma = chroma_method(chunk,method)
+		chroma = chroma_method(chunk,method,sr, hop_length)
 		chroma= chroma.T
-		chord_labels= template.chordFind(t = chroma, strING = name, binsPerOctave = str(binsPerOctave),  location =location,
-			start_idx = start_idx,chord_labels=chord_labels)
+		chord_labels= template.chordFind(t = chroma,start_idx = start_idx,chord_labels=chord_labels) 
 		chunk = aud[end_idx*hop_length:len(aud)]
 		chunk=np.zeros(np.shape(chunk))
 
 		############CHROMA#####################
 		#chroma = feature.chroma_finder().from_cqt(chunk)
 		#chroma = feature.nnls().chroma(data= chunk, sample_rate = sr,hop_length=hop_length, frame_length=2048)
-		chroma = chroma_method(chunk, method)
+		chroma = chroma_method(chunk,method,sr, hop_length)
 		chroma= chroma.T
-		chord_labels= template.chordFind(t = chroma, strING = name, binsPerOctave = str(binsPerOctave), location =location,
-			start_idx = end_idx,chord_labels=chord_labels) 
+		chord_labels= template.chordFind(t = chroma,start_idx = end_idx,chord_labels=chord_labels) 
 	else:
 		end_idx = length
 		chunk = aud[start_idx*hop_length:end_idx*hop_length]
@@ -125,10 +119,9 @@ def chunk_sender(peaks, z_boundaries, aud, location, method, name,hop_length= 51
 		############CHROMA#####################
 		#chroma = feature.chroma_finder().from_cqt(chunk)
 		#chroma = feature.nnls().chroma(data= chunk, sample_rate = sr,hop_length=hop_length, frame_length=2048)
-		chroma = chroma_method(chunk,method)
+		chroma = chroma_method(chunk,method,sr, hop_length)
 		chroma = chroma.T
-		chord_labels= template.chordFind(t = chroma, strING = name, binsPerOctave = str(binsPerOctave),  location =location,
-			start_idx = start_idx,chord_labels=chord_labels) 	
+		chord_labels= template.chordFind(t = chroma,start_idx = start_idx,chord_labels=chord_labels) 
 
 	chord_labels = chord_labels[1:]	
 	#return new_name 

@@ -110,7 +110,7 @@ def correlate(z):
 # 	f.close()
 # 	return ;
 
-def chordFind(t, strING, binsPerOctave,location, start_idx, chord_labels):
+def chordFind(t, start_idx, chord_labels):
 	# path = location + strING + binsPerOctave+ '.txt'
 	# f = open(path, 'a')
 	# path_vector =  location + strING + binsPerOctave+ 'Vector'+ '.txt'

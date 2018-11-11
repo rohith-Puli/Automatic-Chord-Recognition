@@ -58,8 +58,10 @@ def make_single_folder_csv(dataset4_path, dest_path):
 	return;
 
 
-def allWav_wav_to_frame_and_time(allWav_path, dest_path_frames, dest_path_time):
-	# This function template matches the audio file after detecting the onsets and writes two files as output-> 1. Frames in the dest_pat_frames folder, 2. Chord labels in time intervals in dest_path_time
+def allWav_wav_to_frame_to_time(allWav_path,dest_path_time):
+	if(os.path.exists(dest_path_time)==False):
+		os.mkdir(dest_path_time)
+	# This function template matches the audio file after detecting the onsets and writes two files as output-> Chord labels in time intervals in dest_path_time
 	for wav_file in os.listdir(allWav_path):
 
 		name = wav_file
@@ -78,16 +80,18 @@ def allWav_wav_to_frame_and_time(allWav_path, dest_path_frames, dest_path_time):
 		peaks = feature.find_common_zerospeaks(peaks = peaks, z =z)
 
 		#4.send peaks,z_boundaries, audio to chunkSender which will create a frame-level file
-		new_name = chunk_send.chunk_sender(peaks=peaks, z_boundaries=z_boundaries, aud=y, location_dest=dest_path_frames, name=name.split('.')[0],hop_length= 512,binsPerOctave= 36,sr=44100)
+		chord_labels = chunk_send.chunk_sender(peaks=peaks, z_boundaries=z_boundaries, aud=y,method = 'nnls', name=name.split('.')[0],hop_length= 512,binsPerOctave= 36,sr=44100)
 
 		#5. Convert the frame based chord labels to time based labels
-		est_file = feature.frame_file_converter(path_source = dest_path_frames,path_dest = dest_path_time, fileName = new_name , sr= sr, hop_length= 512)
-		print '%s converted'%(new_name)
+		est_file = feature.frame_file_converter(frame_array=chord_labels , sr=sr, hop_length= 512, dest_path = dest_path_time, name =name.split('.')[0])
+
+		print '%s successfully processed'%(wav_file)
+	return;
 
 # allWav_path = '/mnt/c/Users/rohith/Documents/BITS_Pilani/IITB/Guitar_Chord_Detection/IDMT-SMT-GUITAR_V2/allWav/'
-# dest_path_frames = '/mnt/c/Users/rohith/Documents/BITS_Pilani/IITB/Guitar_Chord_Detection/IDMT-SMT-GUITAR_V2/allWav_frames_cqt/'
-# dest_path_time = '/mnt/c/Users/rohith/Documents/BITS_Pilani/IITB/Guitar_Chord_Detection/IDMT-SMT-GUITAR_V2/allWav_time_cqt/'
-# allWav_wav_to_frame_and_time(allWav_path, dest_path_frames, dest_path_time)
+# dest_path_time = '/mnt/c/Users/rohith/Documents/BITS_Pilani/IITB/Guitar_Chord_Detection/IDMT-SMT-GUITAR_V2/allWav_time_nnls/'
+# allWav_wav_to_frame_to_time(allWav_path,dest_path_time)
+
 
 ##========The following functions are for the dataset========########
 
@@ -215,12 +219,15 @@ def evaluate_dataset(estimated_folder, reference_folder,results_file_path ):
 	estimated_folder_files = os.listdir(estimated_folder)
 	reference_folder_files = os.listdir(reference_folder)
 	for x in range(0, len(estimated_folder_files),1):
-		est_file_name = estimated_folder_files[x].split('36')[0]
+		est_file_name = estimated_folder_files[x].split('_estimated')[0]
 		ref_file_name = reference_folder_files[x].split('.')[0]
+
+		fr = open(os.path.join(estimated_folder,estimated_folder_files[x])) 
+		lines_estimated_file = fr.readlines()
+		duration = lines_estimated_file[len(lines_estimated_file)-1].split(' ')[1]
 		if (est_file_name == ref_file_name):
 			root, majmin, mirex, thirds, est_labels, ref_labels, intervals, comparisons_root = evaluation.eval_csr(est_file= os.path.join(estimated_folder,estimated_folder_files[x]), ref_file =os.path.join(reference_folder,reference_folder_files[x]) )
-			f.write('%s %f %f %f %f\n'%(est_file_name, root, majmin, mirex,thirds))
-
+			f.write('%s %f %f %f %f %f \n'%(est_file_name, root, majmin, mirex,thirds, float(duration) ))
 	f.close()
 	return;
 
